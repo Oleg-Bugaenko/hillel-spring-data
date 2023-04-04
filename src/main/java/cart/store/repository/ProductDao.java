@@ -3,6 +3,7 @@ package cart.store.repository;
 import cart.store.entity.Product;
 import cart.store.entity.mappers.ProductRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -31,15 +32,23 @@ public class ProductDao implements ProductRepo{
 
     @Override
     public Product findById(Integer id) {
-        String sqlQuestion = "SELECT * FROM product WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuestion, productRowMapper, id);
+        try {
+            String sqlQuestion = "SELECT * FROM product WHERE id = ?";
+            return jdbcTemplate.queryForObject(sqlQuestion, productRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
     public List<Product> getAll() {
-        List<Product> products;
-        String sqlQuestion = "SELECT * FROM product";
-        products = jdbcTemplate.query(sqlQuestion, productRowMapper);
-        return products;
+        try {
+            List<Product> products;
+            String sqlQuestion = "SELECT * FROM product";
+            products = jdbcTemplate.query(sqlQuestion, productRowMapper);
+            return products;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
